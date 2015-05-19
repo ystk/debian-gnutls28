@@ -1,0 +1,9 @@
+14_version_gettextcat.diff
+20_debian_specific_soname.diff
+30_guile-snarf.diff
+35_recheck_urandom_fd.diff
+36_less_refresh-rnd-state.diff
+37_X9.63_sanity_check.diff
+38_testforsanitycheck.diff
+39_check-whether-the-two-signatur.patch
+40_no_more_ssl3.diff
