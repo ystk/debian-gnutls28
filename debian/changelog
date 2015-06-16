@@ -1,3 +1,13 @@
+gnutls28 (3.3.8-6+deb8u1) jessie; urgency=medium
+
+  * Reupload 3.3.8-7 unchanged for first point release:
+    45_eliminated-double-free.diff 46_Better-fix-for-the-double-free.diff:
+    Pull two patches from upstream to a use-after-free flaw in
+    gnutls_x509_ext_import_crl_dist_points(). CVE-2015-3308
+    Closes: #782776
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 27 Apr 2015 19:38:26 +0200
+
 gnutls28 (3.3.8-6) unstable; urgency=medium
 
   * 39_check-whether-the-two-signatur.patch: Pull and unfuzz
