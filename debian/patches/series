@@ -9,3 +9,4 @@
 40_no_more_ssl3.diff
 45_eliminated-double-free.diff
 46_Better-fix-for-the-double-free.diff
+47_GNUTLS-SA-2015-3.patch

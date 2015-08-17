@@ -1,3 +1,11 @@
+gnutls28 (3.3.8-6+deb8u2) jessie-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Add 47_GNUTLS-SA-2015-3.patch patch.
+    Fixes double free in DN decoding [GNUTLS-SA-2015-3]. (Closes: #795068)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Wed, 12 Aug 2015 10:15:44 +0200
+
 gnutls28 (3.3.8-6+deb8u1) jessie; urgency=medium
 
   * Reupload 3.3.8-7 unchanged for first point release:
