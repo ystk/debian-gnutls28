@@ -10,3 +10,7 @@
 45_eliminated-double-free.diff
 46_Better-fix-for-the-double-free.diff
 47_GNUTLS-SA-2015-3.patch
+50_Handle-zero-length-plaintext-for-VIA-PadLock-functio.patch
+51_0001__gnutls_session_sign_algo_enabled-do-not-consider-an.patch
+51_0002_before-falling-back-to-SHA1-as-signature-algorithm-i.patch
+51_0003_tests-added-reproducer-for-the-MD5-acceptance-issue.patch

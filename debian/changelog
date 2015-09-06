@@ -1,3 +1,19 @@
+gnutls28 (3.3.8-6+deb8u3) jessie; urgency=medium
+
+  * Pull 50_Handle-zero-length-plaintext-for-VIA-PadLock-functio.patch from
+    upstream version 3.3.12 to fix a crash in VIA PadLock asm. (Thanks, Peter
+    Lebbing). Closes: #788704
+  * Pull 51_0001__gnutls_session_sign_algo_enabled-do-not-consider-an.patch
+    51_0002_before-falling-back-to-SHA1-as-signature-algorithm-i.patch
+    51_0003_tests-added-reproducer-for-the-MD5-acceptance-issue.patch (the
+    latter unfuzzed) from GnuTLS 3.3.15 to fix GNUTLS-SA-2015-2. - A
+    ServerKeyExchange signature sent by the server was not verified to be in
+    the acceptable by the client set of algorithms. That had the effect of
+    allowing MD5 signatures (which are disabled by default) in the
+    ServerKeyExchange message.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 14 Aug 2015 18:28:30 +0200
+
 gnutls28 (3.3.8-6+deb8u2) jessie-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
