@@ -14,3 +14,5 @@
 51_0001__gnutls_session_sign_algo_enabled-do-not-consider-an.patch
 51_0002_before-falling-back-to-SHA1-as-signature-algorithm-i.patch
 51_0003_tests-added-reproducer-for-the-MD5-acceptance-issue.patch
+52_CVE-2016-7444_ocsp-corrected-the-comparison-of-the-serial-size-in-.patch
+53_nettle-use-rsa_-_key_prepare-on-key-import.patch

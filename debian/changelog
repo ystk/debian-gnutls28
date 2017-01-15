@@ -1,3 +1,16 @@
+gnutls28 (3.3.8-6+deb8u4) jessie; urgency=medium
+
+  [ Salvatore Bonaccorso ]
+  * CVE-2016-7444: Incorrect certificate validation when using OCSP responses
+    (GNUTLS-SA-2016-3). See #840191.
+
+  [ Andreas Metzler ]
+  * Cherry pick 53_nettle-use-rsa_-_key_prepare-on-key-import.patch
+    from upstream GIT, which should allow gnutls continue to work with
+    CVE-2016-6489-patched nettle. See #832983.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 30 Oct 2016 07:39:08 +0100
+
 gnutls28 (3.3.8-6+deb8u3) jessie; urgency=medium
 
   * Pull 50_Handle-zero-length-plaintext-for-VIA-PadLock-functio.patch from
