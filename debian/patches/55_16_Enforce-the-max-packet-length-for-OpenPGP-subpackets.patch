@@ -1,0 +1,50 @@
+From efa1251cc197239a36eca48fd204afae41b05994 Mon Sep 17 00:00:00 2001
+From: Alex Gaynor <alex.gaynor@gmail.com>
+Date: Sun, 5 Mar 2017 02:21:30 +0000
+Subject: [PATCH] Enforce the max packet length for OpenPGP subpackets as well
+
+This addresses:
+  https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=392
+
+Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+---
+ lib/opencdk/read-packet.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/lib/opencdk/read-packet.c b/lib/opencdk/read-packet.c
+index e202a10b0..56bbccc70 100644
+--- a/lib/opencdk/read-packet.c
++++ b/lib/opencdk/read-packet.c
+@@ -571,6 +571,9 @@ read_user_id(cdk_stream_t inp, size_t pktlen, cdk_pkt_userid_t user_id)
+ }
+ 
+ 
++#define MAX_PACKET_LEN (1<<24)
++
++
+ static cdk_error_t
+ read_subpkt(cdk_stream_t inp, cdk_subpkt_t * r_ctx, size_t * r_nbytes)
+ {
+@@ -610,6 +613,10 @@ read_subpkt(cdk_stream_t inp, cdk_subpkt_t * r_ctx, size_t * r_nbytes)
+ 	else
+ 		return CDK_Inv_Packet;
+ 
++	if (size >= MAX_PACKET_LEN) {
++		return CDK_Inv_Packet;
++	}
++
+ 	node = cdk_subpkt_new(size);
+ 	if (!node)
+ 		return CDK_Out_Of_Core;
+@@ -951,8 +958,6 @@ static cdk_error_t skip_packet(cdk_stream_t inp, size_t pktlen)
+ 	return 0;
+ }
+ 
+-#define MAX_PACKET_LEN (1<<24)
+-
+ /**
+  * cdk_pkt_read:
+  * @inp: the input stream
+-- 
+2.11.0
+

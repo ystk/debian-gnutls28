@@ -1,0 +1,29 @@
+From affb3d659681af1dca04448e25f27c7e22eda0c7 Mon Sep 17 00:00:00 2001
+From: Alex Gaynor <alex.gaynor@gmail.com>
+Date: Sun, 1 Jan 2017 09:15:09 -0500
+Subject: [PATCH 4/8] Corrected a leak in OpenPGP sub-packet parsing.
+
+Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+---
+ lib/opencdk/read-packet.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/lib/opencdk/read-packet.c b/lib/opencdk/read-packet.c
+index f1d165053..8cba25c47 100644
+--- a/lib/opencdk/read-packet.c
++++ b/lib/opencdk/read-packet.c
+@@ -596,8 +596,10 @@ read_subpkt(cdk_stream_t inp, cdk_subpkt_t * r_ctx, size_t * r_nbytes)
+ 	node->size--;
+ 	rc = stream_read(inp, node->d, node->size, &nread);
+ 	n += nread;
+-	if (rc)
++	if (rc) {
++		cdk_subpkt_free(node);
+ 		return rc;
++	}
+ 	*r_nbytes = n;
+ 	if (!*r_ctx)
+ 		*r_ctx = node;
+-- 
+2.11.0
+

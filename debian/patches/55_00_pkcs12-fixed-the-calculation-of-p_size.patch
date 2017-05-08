@@ -1,0 +1,26 @@
+From 3979cbcb425b4088c822b0a75c78f5f1eef32291 Mon Sep 17 00:00:00 2001
+From: Nikos Mavrogiannopoulos <nmav@redhat.com>
+Date: Mon, 28 Nov 2016 11:47:40 +0100
+Subject: [PATCH] pkcs12: fixed the calculation of p_size
+
+That affects passwords which exceed 32 characters.
+---
+ lib/x509/pkcs12_encr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/x509/pkcs12_encr.c b/lib/x509/pkcs12_encr.c
+index 85cd3f228..d8fd49f82 100644
+--- a/lib/x509/pkcs12_encr.c
++++ b/lib/x509/pkcs12_encr.c
+@@ -105,7 +105,7 @@ _gnutls_pkcs12_string_to_key(const mac_entry_st * me,
+ 	}
+ 
+ 	/* Store salt and password in BUF_I */
+-	p_size = ((pwlen / 64) * 64) + 64;
++	p_size = (((2*pwlen) / 64) * 64) + 64;
+ 
+ 	if (p_size > sizeof(buf_i) - 64)
+ 		return gnutls_assert_val(GNUTLS_E_INVALID_REQUEST);
+-- 
+2.11.0
+

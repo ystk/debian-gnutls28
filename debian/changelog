@@ -1,3 +1,62 @@
+gnutls28 (3.3.8-6+deb8u5) jessie; urgency=medium
+
+  * Pull multiple fixes from gnutls_3_3_x branch:
+    + 55_00_pkcs12-fixed-the-calculation-of-p_size.patch
+      Fixed issue in PKCS#12 password encoding, which truncated
+      passwords over 32-characters. Reported by Mario Klebsch.
+    + 55_01_gnutls_x509_ext_import_proxy-fix-issue-reading-the-p.patch
+      Fix double free in certificate information printing. If the PKIX
+      extension proxy was set with a policy language set but no policy
+      specified, that could lead to a double free. [GNUTLS-SA-2017-1]
+      CVE-2017-5334
+    + 55_02_auth-rsa-eliminated-memory-leak-on-pkcs-1-formatting.patch
+      Addressed memory leak in server side error path (issue found using
+      oss-fuzz project)
+    + 55_03_opencdk-Fixes-to-prevent-undefined-behavior-found-wi.patch
+      55_04_Do-not-infinite-loop-if-an-EOF-occurs-while-skipping.patch
+      55_05_Attempt-to-fix-a-leak-in-OpenPGP-cert-parsing.patch
+      55_06_Corrected-a-leak-in-OpenPGP-sub-packet-parsing.patch
+      55_07_opencdk-read_attribute-added-more-precise-checks-whe.patch
+      55_08_opencdk-cdk_pk_get_keyid-fix-stack-overflow.patch
+      55_09_opencdk-added-error-checking-in-the-stream-reading-f.patch
+      55_10_opencdk-improved-error-code-checking-in-the-stream-r.patch
+      55_11_opencdk-read-packet.c-corrected-typo-in-type-cast.patch
+      Addressed memory leaks and an infinite loop in OpenPGP certificate
+      parsing. Fixes by Alex Gaynor. (issues found using oss-fuzz project)
+      Addressed invalid memory accesses in OpenPGP certificate parsing.
+      (issues found using oss-fuzz project) [GNUTLS-SA-2017-2]
+      CVE-2017-5335 / CVE-2017-5336 / CVE-2017-5337
+    + 55_12_gnutls_pkcs11_obj_list_import_url2-Always-return-an-.patch
+      When returning success, but no elements,
+      gnutls_pkcs11_obj_list_import_url4, could have returned zero number of
+      elements with a pointer that was uninitialized. Ensure that an
+      initialized (i.e., null in that case), pointer is always returned.
+    + 55_13_cdk_pkt_read-enforce-packet-limits.patch Addressed integer
+      overflow resulting to invalid memory write in OpenPGP certificate
+      parsing.  Issue found using oss-fuzz project:
+      https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=420
+      [GNUTLS-SA-2017-3A] CVE-2017-7869
+    + 55_14_opencdk-read_attribute-account-buffer-size.patch Addressed read
+      of 1 byte past the end of buffer in OpenPGP certificate parsing. Issue
+      found using oss-fuzz project:
+      https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=391
+      (This patch is from gnutls_3_5_x branch.)
+    + 55_15_opencdk-do-not-parse-any-secret-keys-in-packet-when-.patch
+      Addressed crashes in OpenPGP certificate parsing, related to private key
+      parser. No longer allow OpenPGP certificates (public keys) to contain
+      private key sub-packets. Issue found using oss-fuzz project:
+      https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=354
+      https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=360
+      [GNUTLS-SA-2017-3B]
+    + 55_16_Enforce-the-max-packet-length-for-OpenPGP-subpackets.patch
+      Addressed large allocation in OpenPGP certificate parsing, that could
+      lead in out-of-memory condition. Issue found using oss-fuzz project, and
+      was fixed by Alex Gaynor:
+      https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=392
+      [GNUTLS-SA-2017-3C]
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 27 Apr 2017 18:10:51 +0200
+
 gnutls28 (3.3.8-6+deb8u4) jessie; urgency=medium
 
   [ Salvatore Bonaccorso ]

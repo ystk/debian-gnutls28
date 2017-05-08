@@ -1,0 +1,39 @@
+From 097a347d7bad44c8d187363d45465d5db7eaf723 Mon Sep 17 00:00:00 2001
+From: Nikos Mavrogiannopoulos <nmav@redhat.com>
+Date: Wed, 4 Jan 2017 09:46:26 +0100
+Subject: [PATCH] auth rsa: eliminated memory leak on pkcs-1 formatting attack
+ path
+
+Signed-off-by: Nikos Mavrogiannopoulos <nmav@redhat.com>
+---
+ lib/auth/rsa.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/auth/rsa.c b/lib/auth/rsa.c
+index 128e7b4b8..140f17043 100644
+--- a/lib/auth/rsa.c
++++ b/lib/auth/rsa.c
+@@ -112,7 +112,7 @@ static int
+ proc_rsa_client_kx(gnutls_session_t session, uint8_t * data,
+ 		   size_t _data_size)
+ {
+-	gnutls_datum_t plaintext;
++	gnutls_datum_t plaintext = {NULL, 0};
+ 	gnutls_datum_t ciphertext;
+ 	int ret, dsize;
+ 	int randomize_key = 0;
+@@ -150,6 +150,11 @@ proc_rsa_client_kx(gnutls_session_t session, uint8_t * data,
+ 		_gnutls_audit_log(session,
+ 				  "auth_rsa: Possible PKCS #1 format attack\n");
+ 		randomize_key = 1;
++
++		if (ret >= 0) {
++			gnutls_free(plaintext.data);
++			plaintext.data = NULL;
++		}
+ 	} else {
+ 		/* If the secret was properly formatted, then
+ 		 * check the version number.
+-- 
+2.11.0
+
