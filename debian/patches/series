@@ -33,3 +33,6 @@
 55_14_opencdk-read_attribute-account-buffer-size.patch
 55_15_opencdk-do-not-parse-any-secret-keys-in-packet-when-.patch
 55_16_Enforce-the-max-packet-length-for-OpenPGP-subpackets.patch
+56_CVE-2017-7507_1-ext-status_request-ensure-response-IDs-are-pro.patch
+56_CVE-2017-7507_2-ext-status_request-Removed-the-parsing-of-resp.patch
+56_CVE-2017-7507_3-gnutls_ocsp_status_request_enable_client-docum.patch

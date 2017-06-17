@@ -1,3 +1,14 @@
+gnutls28 (3.3.8-6+deb8u6) jessie-security; urgency=high
+
+  * 56_CVE-2017-7507_1-ext-status_request-ensure-response-IDs-are-pro.patch
+    56_CVE-2017-7507_2-ext-status_request-Removed-the-parsing-of-resp.patch
+    56_CVE-2017-7507_3-gnutls_ocsp_status_request_enable_client-docum.patch
+    from upstream gnutls_3_3_x branch: Fix crash upon receiving
+    well-formed status_request extension. GNUTLS-SA-2017-4/CVE-2017-7507
+    Closes: #864560
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 16 Jun 2017 07:39:52 +0200
+
 gnutls28 (3.3.8-6+deb8u5) jessie; urgency=medium
 
   * Pull multiple fixes from gnutls_3_3_x branch:
