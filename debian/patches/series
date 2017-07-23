@@ -36,3 +36,4 @@
 56_CVE-2017-7507_1-ext-status_request-ensure-response-IDs-are-pro.patch
 56_CVE-2017-7507_2-ext-status_request-Removed-the-parsing-of-resp.patch
 56_CVE-2017-7507_3-gnutls_ocsp_status_request_enable_client-docum.patch
+57_urandom-use-st_ino-and-st_rdev-to-determine-device-u.patch

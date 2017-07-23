@@ -1,3 +1,13 @@
+gnutls28 (3.3.8-6+deb8u7) jessie; urgency=medium
+
+  * 57_urandom-use-st_ino-and-st_rdev-to-determine-device-u.patch from
+    upstream gnutls_3_3_x branch: Improve check for /dev/urandom uniqueness.
+    Ensure that when gnutls_global_init() is called for a second time that
+    /dev/urandom is re-opened when the inode or device ID has changed.
+    Closes: #865297
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 24 Jun 2017 17:50:21 +0200
+
 gnutls28 (3.3.8-6+deb8u6) jessie-security; urgency=high
 
   * 56_CVE-2017-7507_1-ext-status_request-ensure-response-IDs-are-pro.patch
