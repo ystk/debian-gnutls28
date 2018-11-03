@@ -1,3 +1,49 @@
+gnutls28 (3.3.30-0+deb8u1) jessie-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * Backport 3.3.30 from upstream to address CVE-2018-10844,
+    CVE-2018-10845 and CVE-2018-10846.
+  * Add net-tools dependency for test suite which expects the netstat
+    command.
+  * Removed patches already present upstream:
+    * 35_recheck_urandom_fd.diff
+    * 36_less_refresh-rnd-state.diff
+    * 37_X9.63_sanity_check.diff
+    * 38_testforsanitycheck.diff
+    * 39_check-whether-the-two-signatur.patch
+    * 40_no_more_ssl3.diff
+    * 45_eliminated-double-free.diff
+    * 46_Better-fix-for-the-double-free.diff
+    * 47_GNUTLS-SA-2015-3.patch
+    * 50_Handle-zero-length-plaintext-for-VIA-PadLock-functio.patch
+    * 51_0001__gnutls_session_sign_algo_enabled-do-not-consider-an.patch
+    * 51_0002_before-falling-back-to-SHA1-as-signature-algorithm-i.patch
+    * 51_0003_tests-added-reproducer-for-the-MD5-acceptance-issue.patch
+    * 52_CVE-2016-7444_ocsp-corrected-the-comparison-of-the-serial-size-in-.patch
+    * 53_nettle-use-rsa_-_key_prepare-on-key-import.patch
+    * 55_00_pkcs12-fixed-the-calculation-of-p_size.patch
+    * 55_01_gnutls_x509_ext_import_proxy-fix-issue-reading-the-p.patch
+    * 55_02_auth-rsa-eliminated-memory-leak-on-pkcs-1-formatting.patch
+    * 55_03_opencdk-Fixes-to-prevent-undefined-behavior-found-wi.patch
+    * 55_04_Do-not-infinite-loop-if-an-EOF-occurs-while-skipping.patch
+    * 55_05_Attempt-to-fix-a-leak-in-OpenPGP-cert-parsing.patch
+    * 55_06_Corrected-a-leak-in-OpenPGP-sub-packet-parsing.patch
+    * 55_07_opencdk-read_attribute-added-more-precise-checks-whe.patch
+    * 55_08_opencdk-cdk_pk_get_keyid-fix-stack-overflow.patch
+    * 55_09_opencdk-added-error-checking-in-the-stream-reading-f.patch
+    * 55_10_opencdk-improved-error-code-checking-in-the-stream-r.patch
+    * 55_11_opencdk-read-packet.c-corrected-typo-in-type-cast.patch
+    * 55_12_gnutls_pkcs11_obj_list_import_url2-Always-return-an-.patch
+    * 55_13_cdk_pkt_read-enforce-packet-limits.patch
+    * 55_15_opencdk-do-not-parse-any-secret-keys-in-packet-when-.patch
+    * 55_16_Enforce-the-max-packet-length-for-OpenPGP-subpackets.patch
+    * 56_CVE-2017-7507_1-ext-status_request-ensure-response-IDs-are-pro.patch
+    * 56_CVE-2017-7507_2-ext-status_request-Removed-the-parsing-of-resp.patch
+    * 56_CVE-2017-7507_3-gnutls_ocsp_status_request_enable_client-docum.patch
+    * 57_urandom-use-st_ino-and-st_rdev-to-determine-device-u.patch
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 30 Oct 2018 10:26:33 -0400
+
 gnutls28 (3.3.8-6+deb8u7) jessie; urgency=medium
 
   * 57_urandom-use-st_ino-and-st_rdev-to-determine-device-u.patch from

@@ -91,6 +91,8 @@ static struct cfg_options available_options[] = {
 	{ .name = "dn", .type = OPTION_STRING },
 	{ .name = "cn", .type = OPTION_STRING },
 	{ .name = "uid", .type = OPTION_STRING },
+	{ .name = "subject_unique_id", .type = OPTION_STRING },
+	{ .name = "issuer_unique_id", .type = OPTION_STRING },
 	{ .name = "challenge_password", .type = OPTION_STRING },
 	{ .name = "password", .type = OPTION_STRING },
 	{ .name = "pkcs9_email", .type = OPTION_STRING },
@@ -127,6 +129,10 @@ typedef struct _cfg_ctx {
 	char *dn;
 	char *cn;
 	char *uid;
+	uint8_t *subject_unique_id;
+	unsigned subject_unique_id_size;
+	uint8_t *issuer_unique_id;
+	unsigned issuer_unique_id_size;
 	char *challenge_password;
 	char *pkcs9_email;
 	char *country;
@@ -164,7 +170,7 @@ typedef struct _cfg_ctx {
 	int ipsec_ike_key;
 	char **key_purpose_oids;
 	int crl_next_update;
-	int crl_number;
+	int64_t crl_number;
 	int crq_extensions;
 	char *proxy_policy_language;
 	char **ocsp_uris;
@@ -242,6 +248,13 @@ void cfg_init(void)
       s_name = 1; \
     }
 
+/* READ_NUMERIC only returns a long */
+#define CHECK_LONG_OVERFLOW(x) \
+      if (x == LONG_MAX) { \
+      	fprintf(stderr, "overflow in number\n"); \
+      	exit(1); \
+      }
+
 #define READ_NUMERIC(name, s_name) \
   val = optionGetValue(pov, name); \
   if (val != NULL) \
@@ -252,6 +265,22 @@ void cfg_init(void)
         s_name = strtol(val->v.strVal, NULL, 10); \
     }
 
+#define HEX_DECODE(hex, output, output_size) \
+	{ \
+		gnutls_datum_t _input = {(void*)hex, strlen(hex)}; \
+		size_t _s; \
+		gnutls_datum_t _output; \
+		_output.size = _input.size/2; \
+		_output.data = gnutls_malloc(_output.size); \
+		_s = _output.size; \
+		ret = gnutls_hex_decode(&_input, _output.data, &_s); \
+		if (ret < 0) { \
+			fprintf(stderr, "error in hex ID: %s\n", hex); \
+			exit(1); \
+		} \
+		output = _output.data; \
+		output_size = _s; \
+	}
 
 static int handle_option(const tOptionValue* val)
 {
@@ -282,6 +311,7 @@ int template_parse(const char *template)
 {
 	/* Parsing return code */
 	unsigned int i;
+	int ret;
 	tOptionValue const *pov;
 	const tOptionValue *val, *prev;
 	char tmpstr[256];
@@ -332,6 +362,14 @@ int template_parse(const char *template)
 	val = optionGetValue(pov, "uid");
 	if (val != NULL && val->valType == OPARG_TYPE_STRING)
 		cfg.uid = strdup(val->v.strVal);
+
+	val = optionGetValue(pov, "issuer_unique_id");
+	if (val != NULL && val->valType == OPARG_TYPE_STRING)
+		HEX_DECODE(val->v.strVal, cfg.issuer_unique_id, cfg.issuer_unique_id_size);
+
+	val = optionGetValue(pov, "subject_unique_id");
+	if (val != NULL && val->valType == OPARG_TYPE_STRING)
+		HEX_DECODE(val->v.strVal, cfg.subject_unique_id, cfg.subject_unique_id_size);
 
 	val = optionGetValue(pov, "challenge_password");
 	if (val != NULL && val->valType == OPARG_TYPE_STRING)
@@ -404,9 +442,13 @@ int template_parse(const char *template)
 
 
 	READ_NUMERIC("serial", cfg.serial);
+	CHECK_LONG_OVERFLOW(cfg.serial);
+
 	READ_NUMERIC("expiration_days", cfg.expiration_days);
 	READ_NUMERIC("crl_next_update", cfg.crl_next_update);
 	READ_NUMERIC("crl_number", cfg.crl_number);
+	CHECK_LONG_OVERFLOW(cfg.crl_number);
+
 	READ_NUMERIC("path_len", cfg.path_len);
 
 	val = optionGetValue(pov, "proxy_policy_language");
@@ -435,11 +477,12 @@ int template_parse(const char *template)
 }
 
 #define IS_NEWLINE(x) ((x[0] == '\n') || (x[0] == '\r'))
+#define MAX_INPUT_SIZE 512
 
 void
 read_crt_set(gnutls_x509_crt_t crt, const char *input_str, const char *oid)
 {
-	char input[128];
+	char input[MAX_INPUT_SIZE];
 	int ret;
 
 	fputs(input_str, stderr);
@@ -461,7 +504,7 @@ read_crt_set(gnutls_x509_crt_t crt, const char *input_str, const char *oid)
 void
 read_crq_set(gnutls_x509_crq_t crq, const char *input_str, const char *oid)
 {
-	char input[128];
+	char input[MAX_INPUT_SIZE];
 	int ret;
 
 	fputs(input_str, stderr);
@@ -482,11 +525,11 @@ read_crq_set(gnutls_x509_crq_t crq, const char *input_str, const char *oid)
 
 /* The input_str should contain %d or %u to print the default.
  */
-static long read_int_with_default(const char *input_str, long def)
+static int64_t read_int_with_default(const char *input_str, long def)
 {
 	char *endptr;
-	long l;
-	static char input[128];
+	int64_t l;
+	static char input[MAX_INPUT_SIZE];
 
 	fprintf(stderr, input_str, def);
 	if (fgets(input, sizeof(input), stdin) == NULL)
@@ -495,18 +538,39 @@ static long read_int_with_default(const char *input_str, long def)
 	if (IS_NEWLINE(input))
 		return def;
 
+#if SIZEOF_LONG < 8
+	l = strtoll(input, &endptr, 0);
+
+	if (*endptr != '\0' && *endptr != '\r' && *endptr != '\n') {
+		fprintf(stderr, "Trailing garbage ignored: `%s'\n",
+			endptr);
+		return 0;
+	} else {
+		*endptr = 0;
+	}
+
+	if (l <= LLONG_MIN || l >= LLONG_MAX) {
+		fprintf(stderr, "Integer out of range: `%s' (max: %llu)\n", input, LLONG_MAX-1);
+		return 0;
+	}
+#else
 	l = strtol(input, &endptr, 0);
 
 	if (*endptr != '\0' && *endptr != '\r' && *endptr != '\n') {
 		fprintf(stderr, "Trailing garbage ignored: `%s'\n",
 			endptr);
 		return 0;
+	} else {
+		*endptr = 0;
 	}
 
-	if (l <= INT_MIN || l >= INT_MAX) {
-		fprintf(stderr, "Integer out of range: `%s'\n", input);
+	if (l <= LONG_MIN || l >= LONG_MAX) {
+		fprintf(stderr, "Integer out of range: `%s' (max: %lu)\n", input, LONG_MAX-1);
 		return 0;
 	}
+#endif
+
+
 
 	if (input == endptr)
 		l = def;
@@ -514,14 +578,14 @@ static long read_int_with_default(const char *input_str, long def)
 	return l;
 }
 
-long read_int(const char *input_str)
+int64_t read_int(const char *input_str)
 {
 	return read_int_with_default(input_str, 0);
 }
 
 const char *read_str(const char *input_str)
 {
-	static char input[128];
+	static char input[MAX_INPUT_SIZE];
 	int len;
 
 	fputs(input_str, stderr);
@@ -546,7 +610,7 @@ const char *read_str(const char *input_str)
  */
 int read_yesno(const char *input_str, int def)
 {
-	char input[128];
+	char input[MAX_INPUT_SIZE];
 
       restart:
 	fputs(input_str, stderr);
@@ -896,6 +960,32 @@ void crt_constraints_set(gnutls_x509_crt_t crt)
 	}
 }
 
+void crt_unique_ids_set(gnutls_x509_crt_t crt)
+{
+	int ret;
+
+	if (batch) {
+		if (cfg.subject_unique_id == NULL && cfg.issuer_unique_id == NULL)
+			return; /* nothing to do */
+
+		if (cfg.subject_unique_id) {
+			ret = gnutls_x509_crt_set_subject_unique_id(crt, cfg.subject_unique_id, cfg.subject_unique_id_size);
+			if (ret < 0) {
+				fprintf(stderr, "error setting subject unique ID: %s\n", gnutls_strerror(ret));
+				exit(1);
+			}
+		}
+
+		if (cfg.issuer_unique_id) {
+			ret = gnutls_x509_crt_set_issuer_unique_id(crt, cfg.issuer_unique_id, cfg.issuer_unique_id_size);
+			if (ret < 0) {
+				fprintf(stderr, "error setting issuer unique ID: %s\n", gnutls_strerror(ret));
+				exit(1);
+			}
+		}
+	}
+}
+
 void get_uid_crt_set(gnutls_x509_crt_t crt)
 {
 	int ret;
@@ -1090,7 +1180,7 @@ void get_rand_int_value(unsigned char* serial, size_t * size, int64_t cfg_val, c
 		default_serial[0] = cfg_val >> 32;
 		default_serial[1] = cfg_val;
 	} else {
-		unsigned long default_serial_int;
+		uint64_t default_serial_int;
 		char tmsg[256];
 
 #if SIZEOF_LONG < 8

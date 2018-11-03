@@ -1,3 +1,32 @@
+gnutls28 (3.3.30-0+deb8u1) jessie-security; urgency=high
+
+  To ease maintenance and ensure complete coverage of complex security
+  issues fixed upstream, we have upgraded to the latest upstream
+  version of the 3.3.x branch. This includes some interoperability
+  changes:
+
+   * ARCFOUR (RC4) and SSL 3.0 are no longer included in the default
+     priorities list. Those have to be explicitly enabled, e.g., with
+     a string like "NORMAL:+ARCFOUR-128" or "NORMAL:+VERS-SSL3.0",
+     respectively.
+
+   * The ciphers utilizing HMAC-SHA384 and SHA256 have been removed
+     from the default priority strings. They are not necessary for
+     compatibility or other purpose and provide no advantage over
+     their SHA1 counter-parts, as they all depend on the legacy TLS
+     CBC block mode.
+
+   * Follow closely RFC5280 recommendations and use UTCTime for dates
+     prior to 2050.
+
+   * Require strict DER encoding for certificates, OCSP requests,
+     private keys, CRLs and certificate requests, in order to reduce
+     issues due to the complexity of BER rules.
+
+   * Refuse to import v1 or v2 certificates that contain extensions.
+   
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 30 Oct 2018 10:26:33 -0400
+
 gnutls28 (3.0.0-1) experimental; urgency=low
 
   GnuTLS is now using nettle instead of libgcrypt as crypto backend.

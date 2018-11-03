@@ -9,6 +9,7 @@ libgnutls-deb0.so.28 libgnutls-deb0-28 #MINVER#
  GNUTLS_DEBIAN_0_FIPS140@GNUTLS_DEBIAN_0_FIPS140 3.3.0
  (regex|optional)"@GNUTLS_DEBIAN_0_PRIVATE$" 3.3.8-~0
  _gnutls_encode_ber_rs_raw@GNUTLS_DEBIAN_0_FIPS140 3.3.0
+ _gnutls_global_init_skip@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_alert_get@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_alert_get_name@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_alert_get_strname@GNUTLS_DEBIAN_0_3_0_0 3.3.0
@@ -348,7 +349,9 @@ libgnutls-deb0.so.28 libgnutls-deb0-28 #MINVER#
  gnutls_pk_to_sign@GNUTLS_DEBIAN_0_3_0_0 3.3.0
  gnutls_pkcs11_add_provider@GNUTLS_DEBIAN_0_2_12 3.3.0
  gnutls_pkcs11_copy_secret_key@GNUTLS_DEBIAN_0_2_12 3.3.8
+ gnutls_pkcs11_copy_x509_crt2@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_pkcs11_copy_x509_crt@GNUTLS_DEBIAN_0_2_12 3.3.8
+ gnutls_pkcs11_copy_x509_privkey2@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_pkcs11_copy_x509_privkey@GNUTLS_DEBIAN_0_2_12 3.3.8
  gnutls_pkcs11_crt_is_known@GNUTLS_DEBIAN_0_3_1_0 3.3.0
  gnutls_pkcs11_deinit@GNUTLS_DEBIAN_0_2_12 3.3.0
@@ -370,11 +373,13 @@ libgnutls-deb0.so.28 libgnutls-deb0-28 #MINVER#
  gnutls_pkcs11_obj_init@GNUTLS_DEBIAN_0_2_12 3.3.0
  gnutls_pkcs11_obj_list_import_url2@GNUTLS_DEBIAN_0_3_1_0 3.3.8
  gnutls_pkcs11_obj_list_import_url@GNUTLS_DEBIAN_0_2_12 3.3.8
+ gnutls_pkcs11_obj_set_info@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_pkcs11_obj_set_pin_function@GNUTLS_DEBIAN_0_3_1_0 3.3.0
  gnutls_pkcs11_privkey_deinit@GNUTLS_DEBIAN_0_2_12 3.3.0
  gnutls_pkcs11_privkey_export_pubkey@GNUTLS_DEBIAN_0_3_1_0 3.3.7
  gnutls_pkcs11_privkey_export_url@GNUTLS_DEBIAN_0_2_12 3.3.0
  gnutls_pkcs11_privkey_generate2@GNUTLS_DEBIAN_0_3_1_0 3.3.8
+ gnutls_pkcs11_privkey_generate3@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_pkcs11_privkey_generate@GNUTLS_DEBIAN_0_3_0_0 3.3.0
  gnutls_pkcs11_privkey_get_info@GNUTLS_DEBIAN_0_2_12 3.3.0
  gnutls_pkcs11_privkey_get_pk_algorithm@GNUTLS_DEBIAN_0_2_12 3.3.0
@@ -867,6 +872,7 @@ libgnutls-deb0.so.28 libgnutls-deb0-28 #MINVER#
  gnutls_x509_crt_set_issuer_alt_name@GNUTLS_DEBIAN_0_3_1_0 3.3.0
  gnutls_x509_crt_set_issuer_dn@GNUTLS_DEBIAN_0_3_1_0 3.3.0
  gnutls_x509_crt_set_issuer_dn_by_oid@GNUTLS_DEBIAN_0_1_4 3.3.0
+ gnutls_x509_crt_set_issuer_unique_id@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_x509_crt_set_key@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_set_key_purpose_oid@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_set_key_usage@GNUTLS_DEBIAN_0_1_4 3.3.0
@@ -881,6 +887,7 @@ libgnutls-deb0.so.28 libgnutls-deb0-28 #MINVER#
  gnutls_x509_crt_set_subject_alt_name@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_set_subject_alternative_name@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_set_subject_key_id@GNUTLS_DEBIAN_0_1_4 3.3.0
+ gnutls_x509_crt_set_subject_unique_id@GNUTLS_DEBIAN_0_3_1_0 3.3.30-1+deb8u
  gnutls_x509_crt_set_version@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_sign2@GNUTLS_DEBIAN_0_1_4 3.3.0
  gnutls_x509_crt_sign@GNUTLS_DEBIAN_0_1_4 3.3.0

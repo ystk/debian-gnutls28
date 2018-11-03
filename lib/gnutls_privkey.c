@@ -307,6 +307,14 @@ void gnutls_privkey_deinit(gnutls_privkey_t key)
 	gnutls_free(key);
 }
 
+void _gnutls_privkey_cleanup(gnutls_privkey_t key)
+{
+	memset(&key->key, 0, sizeof(key->key));
+	key->type = 0;
+	key->pk_algorithm = 0;
+	key->flags = 0;
+}
+
 /* will fail if the private key contains an actual key.
  */
 static int check_if_clean(gnutls_privkey_t key)
@@ -729,7 +737,7 @@ int gnutls_privkey_import_openpgp_raw(gnutls_privkey_t pkey,
 		goto cleanup;
 	}
 
-	ret = 0;
+	return 0;
 
  cleanup:
 	gnutls_openpgp_privkey_deinit(xpriv);

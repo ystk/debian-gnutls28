@@ -27,7 +27,6 @@
 #include "config.h"
 #endif
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -53,7 +52,7 @@ unsigned iterations;
 unsigned storage_length = 0, i;
 uint8_t *storage = NULL;
 uint8_t pseed[MAX_PVP_SEED_SIZE+1];
-unsigned pseed_length = sizeof(pseed);
+unsigned pseed_length = sizeof(pseed), tseed_length;
 unsigned max = bits*5;
 
 	mpz_init(p0);
@@ -85,11 +84,13 @@ unsigned max = bits*5;
 
 		nettle_mpz_set_str_256_u(s, pseed_length, pseed);
 		for (i = 0; i < iterations; i++) {
-			pseed_length = nettle_mpz_sizeinbase_256_u(s);
-			nettle_mpz_get_str_256(pseed_length, pseed, s);
+			tseed_length = mpz_seed_sizeinbase_256_u(s, pseed_length);
+			if (tseed_length > sizeof(pseed))
+				goto fail;
+			nettle_mpz_get_str_256(tseed_length, pseed, s);
 
 			hash(&storage[(iterations - i - 1) * DIGEST_SIZE],
-			     pseed_length, pseed);
+			     tseed_length, pseed);
 			mpz_add_ui(s, s, 1);
 		}
 
@@ -170,11 +171,13 @@ unsigned max = bits*5;
 		mpz_set_ui(x, 0); /* a = 0 */
 		if (iterations > 0) {
 			for (i = 0; i < iterations; i++) {
-				pseed_length = nettle_mpz_sizeinbase_256_u(s);
-				nettle_mpz_get_str_256(pseed_length, pseed, s);
+				tseed_length = mpz_seed_sizeinbase_256_u(s, pseed_length);
+				if (tseed_length > sizeof(pseed))
+					goto fail;
+				nettle_mpz_get_str_256(tseed_length, pseed, s);
 
 				hash(&storage[(iterations - i - 1) * DIGEST_SIZE],
-				     pseed_length, pseed);
+				     tseed_length, pseed);
 				mpz_add_ui(s, s, 1);
 			}
 
@@ -203,16 +206,19 @@ unsigned max = bits*5;
 			mpz_powm(r1, r2, p0, p);
 			if (mpz_cmp_ui(r1, 1) == 0) {
 				if (prime_seed_length != NULL) {
-					pseed_length = nettle_mpz_sizeinbase_256_u(s);
-					nettle_mpz_get_str_256(pseed_length, pseed, s);
+					tseed_length = mpz_seed_sizeinbase_256_u(s, pseed_length);
+					if (tseed_length > sizeof(pseed))
+						goto fail;
 
-					if (*prime_seed_length < pseed_length) {
-						*prime_seed_length = pseed_length;
+					nettle_mpz_get_str_256(tseed_length, pseed, s);
+
+					if (*prime_seed_length < tseed_length) {
+						*prime_seed_length = tseed_length;
 						goto fail;
 					}
-					*prime_seed_length = pseed_length;
+					*prime_seed_length = tseed_length;
 					if (prime_seed != NULL)
-						memcpy(prime_seed, pseed, pseed_length);
+						memcpy(prime_seed, pseed, tseed_length);
 				}
 				ret = 1;
 				goto cleanup;
@@ -256,7 +262,7 @@ _rsa_generate_fips186_4_keypair(struct rsa_public_key *pub,
 				/* Desired size of modulo, in bits */
 				unsigned n_size)
 {
-	mpz_t t, r, p1, q1, phi;
+	mpz_t t, r, p1, q1, lcm;
 	int ret;
 	struct dss_params_validation_seeds cert;
 	unsigned l = n_size / 2;
@@ -281,7 +287,7 @@ _rsa_generate_fips186_4_keypair(struct rsa_public_key *pub,
 
 	mpz_init(p1);
 	mpz_init(q1);
-	mpz_init(phi);
+	mpz_init(lcm);
 	mpz_init(t);
 	mpz_init(r);
 
@@ -330,16 +336,32 @@ _rsa_generate_fips186_4_keypair(struct rsa_public_key *pub,
 
 	mpz_mul(pub->n, key->p, key->q);
 
-	assert(mpz_sizeinbase(pub->n, 2) == n_size);
+	if (mpz_sizeinbase(pub->n, 2) != n_size) {
+		ret = 0;
+		goto cleanup;
+	}
 
 	/* c = q^{-1} (mod p) */
-	assert(mpz_invert(key->c, key->q, key->p) != 0);
+	if (mpz_invert(key->c, key->q, key->p) == 0) {
+		ret = 0;
+		goto cleanup;
+	}
 
 	mpz_sub_ui(p1, key->p, 1);
 	mpz_sub_ui(q1, key->q, 1);
-	mpz_mul(phi, p1, q1);
 
-	assert(mpz_invert(key->d, pub->e, phi) != 0);
+	mpz_lcm(lcm, p1, q1);
+
+	if (mpz_invert(key->d, pub->e, lcm) == 0) {
+		ret = 0;
+		goto cleanup;
+	}
+
+	/* check whether d > 2^(nlen/2) -- FIPS186-4 5.3.1 */
+	if (mpz_sizeinbase(key->d, 2) < n_size/2) {
+		ret = 0;
+		goto cleanup;
+	}
 
 	/* Done! Almost, we must compute the auxillary private values. */
 	/* a = d % (p-1) */
@@ -351,13 +373,16 @@ _rsa_generate_fips186_4_keypair(struct rsa_public_key *pub,
 	/* c was computed earlier */
 
 	pub->size = key->size = (n_size + 7) / 8;
-	assert(pub->size >= RSA_MINIMUM_N_OCTETS);
+	if (pub->size < RSA_MINIMUM_N_OCTETS) {
+		ret = 0;
+		goto cleanup;
+	}
 
 	ret = 1;
  cleanup:
 	mpz_clear(p1);
 	mpz_clear(q1);
-	mpz_clear(phi);
+	mpz_clear(lcm);
 	mpz_clear(t);
 	mpz_clear(r);
 	return ret;

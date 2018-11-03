@@ -9,8 +9,10 @@ Origin: vendor
 Forwarded: http://lists.gnutls.org/pipermail/gnutls-devel/2014-May/006938.html
 Last-Update: 2014-09-18
 
---- a/lib/Makefile.am
-+++ b/lib/Makefile.am
+Index: b/lib/Makefile.am
+===================================================================
+--- a/lib/Makefile.am	2018-10-22 14:44:03.986028336 -0400
++++ b/lib/Makefile.am	2018-10-22 14:44:03.986028336 -0400
 @@ -123,6 +123,7 @@ libgnutls_la_SOURCES = $(HFILES) $(COBJE
  	gnutls.asn pkix.asn libgnutls.map
  
@@ -19,8 +21,10 @@ Last-Update: 2014-09-18
  	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
  
  libgnutls_la_LIBADD = ../gl/libgnu.la x509/libgnutls_x509.la \
---- a/lib/libgnutls.map
-+++ b/lib/libgnutls.map
+Index: b/lib/libgnutls.map
+===================================================================
+--- a/lib/libgnutls.map	2018-10-22 14:44:03.986028336 -0400
++++ b/lib/libgnutls.map	2018-10-22 14:44:36.382538024 -0400
 @@ -18,7 +18,7 @@
  # You should have received a copy of the GNU Lesser General Public License
  # along with this program.  If not, see <http://www.gnu.org/licenses/>
@@ -87,10 +91,10 @@ Last-Update: 2014-09-18
    global:
          gnutls_pkcs11_get_pin_function;
  	gnutls_pkcs11_obj_list_import_url2;
-@@ -1024,9 +1024,9 @@ GNUTLS_3_1_0 {
- 	gnutls_x509_ext_deinit;
- 	gnutls_x509_ext_print;
- 	gnutls_x509_othername_to_virtual;
+@@ -1031,9 +1031,9 @@ GNUTLS_3_1_0 {
+ 	gnutls_pkcs11_copy_x509_privkey2;
+ 	gnutls_pkcs11_privkey_generate3;
+ 	gnutls_pkcs11_obj_set_info;
 -} GNUTLS_3_0_0;
 +} GNUTLS_DEBIAN_0_3_0_0;
  
@@ -99,8 +103,8 @@ Last-Update: 2014-09-18
  	gnutls_cipher_self_test;
  	gnutls_pk_self_test;
  	gnutls_mac_self_test;
-@@ -1045,7 +1045,7 @@ GNUTLS_FIPS140 {
- 	_rsa_generate_fips186_4_keypair;
+@@ -1056,7 +1056,7 @@ GNUTLS_FIPS140 {
+ 	_gnutls_ecdh_compute_key;
  };
  
 -GNUTLS_PRIVATE {
