@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2002-2012 Free Software Foundation, Inc.
+ * Copyright (C) 2002-2016 Free Software Foundation, Inc.
+ * Copyright (C) 2015-2016 Red Hat, Inc.
  *
  * Author: Nikos Mavrogiannopoulos
  *
@@ -150,12 +151,12 @@ _gnutls_sign_algorithm_parse_data(gnutls_session_t session,
 		     gnutls_sign_get_name(sig));
 
 		if (sig != GNUTLS_SIGN_UNKNOWN) {
-			priv->sign_algorithms[priv->
-					      sign_algorithms_size++] =
-			    sig;
 			if (priv->sign_algorithms_size ==
 			    MAX_SIGNATURE_ALGORITHMS)
 				break;
+			priv->sign_algorithms[priv->
+					      sign_algorithms_size++] =
+			    sig;
 		}
 	}
 
@@ -195,7 +196,7 @@ _gnutls_signature_algorithm_recv_params(gnutls_session_t session,
 	} else {
 		/* SERVER SIDE - we must check if the sent cert type is the right one
 		 */
-		if (data_size > 2) {
+		if (data_size >= 2) {
 			uint16_t len;
 
 			DECR_LEN(data_size, 2);
@@ -278,11 +279,12 @@ _gnutls_session_get_sign_algo(gnutls_session_t session,
 					 &epriv);
 	priv = epriv.ptr;
 
-	if (ret < 0 || !_gnutls_version_has_selectable_sighash(ver)
-	    || priv->sign_algorithms_size == 0)
+	if (ret < 0 || !_gnutls_version_has_selectable_sighash(ver)) {
 		/* none set, allow SHA-1 only */
-	{
-		return gnutls_pk_to_sign(cert_algo, GNUTLS_DIG_SHA1);
+		ret = gnutls_pk_to_sign(cert_algo, GNUTLS_DIG_SHA1);
+		if (_gnutls_session_sign_algo_enabled(session, ret) < 0)
+			goto fail;
+		return ret;
 	}
 
 	for (i = 0; i < priv->sign_algorithms_size; i++) {
@@ -301,6 +303,7 @@ _gnutls_session_get_sign_algo(gnutls_session_t session,
 		}
 	}
 
+ fail:
 	return GNUTLS_SIGN_UNKNOWN;
 }
 
@@ -313,28 +316,12 @@ _gnutls_session_sign_algo_enabled(gnutls_session_t session,
 				  gnutls_sign_algorithm_t sig)
 {
 	unsigned i;
-	int ret;
 	const version_entry_st *ver = get_version(session);
-	sig_ext_st *priv;
-	extension_priv_data_t epriv;
 
 	if (unlikely(ver == NULL))
 		return gnutls_assert_val(GNUTLS_E_INTERNAL_ERROR);
 
-	ret =
-	    _gnutls_ext_get_session_data(session,
-					 GNUTLS_EXTENSION_SIGNATURE_ALGORITHMS,
-					 &epriv);
-	if (ret < 0) {
-		gnutls_assert();
-		return 0;
-	}
-	priv = epriv.ptr;
-
-	if (!_gnutls_version_has_selectable_sighash(ver)
-	    || priv->sign_algorithms_size == 0)
-		/* none set, allow all */
-	{
+	if (!_gnutls_version_has_selectable_sighash(ver)) {
 		return 0;
 	}
 
