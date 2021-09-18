@@ -2,3 +2,8 @@
 20_debian_specific_soname.diff
 30_guile-snarf.diff
 55_14_opencdk-read_attribute-account-buffer-size.patch
+
+0001-gnutls_x509_trust_list_verify_crt2-treat-signers-wit.patch
+44_rel3.6.14_15-_gnutls_pkcs11_verify_crt_status-check-validity-agai.patch
+44_rel3.6.14_16-x509-trigger-fallback-verification-path-when-cert-is.patch
+44_rel3.6.14_17-tests-add-test-case-for-certificate-chain-supersedin.patch
