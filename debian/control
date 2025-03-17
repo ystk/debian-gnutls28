@@ -6,7 +6,7 @@ Uploaders: Andreas Metzler <ametzler@debian.org>,
  Eric Dorland <eric@debian.org>,
  James Westby <jw+debian@jameswestby.net>,
  Simon Josefsson <simon@josefsson.org>
-Build-Depends: debhelper (>= 9), nettle-dev (>= 2.7), zlib1g-dev,
+Build-Depends: debhelper (>= 9), nettle-dev (>= 2.7), nettle-dev (<= 3~), zlib1g-dev,
  libtasn1-6-dev (>= 3.9), autotools-dev, guile-2.0-dev [!ia64 !m68k], datefudge,
  libp11-kit-dev (>= 0.20.7), pkg-config, chrpath, libidn11-dev,
  autogen (>= 1:5.16-0), bison, dh-autoreconf, libgmp-dev (>= 2:6),
@@ -15,6 +15,7 @@ Build-Depends: debhelper (>= 9), nettle-dev (>= 2.7), zlib1g-dev,
 # it along. However we want to enforce that gnutls is only built if the
 # dual-licensed GMP is available, otherwise the resulting binary
 # cannot be installed.
+# NOTE: ELTS (jessie) - nettle-dev <3 is required to avoid CVE-2021-4209
 Build-Depends-Indep: gtk-doc-tools, texinfo (>= 4.8)
 Build-Conflicts: libgnutls-dev, libp11-kit-dev (= 0.21.2-1)
 Standards-Version: 3.9.5

@@ -1,3 +1,17 @@
+gnutls28 (3.3.30-0+deb8u3) jessie-security; urgency=high
+
+  * Non-maintainer upload by the ELTS Team.
+
+  [Tobias Frost]
+  * d/control: Ensure that the package is built with nettle2, to avoid
+    CVE 2021-4209. gnutls28 is only vulnerable when built with nettle3.
+
+  [Guilhem Moulin]
+  * Fix CVE-2024-12243: Potential DoS while parsing a certificate containing
+    numerous names or name constraints.
+
+ -- Guilhem Moulin <guilhem@debian.org>  Sat, 15 Mar 2025 23:13:44 +0100
+
 gnutls28 (3.3.30-0+deb8u2) jessie-security; urgency=high
   
   * Non-maintainer upload by the ELTS Security Team.
